@@ -5,6 +5,8 @@ import com.itheima.reggie.common.BaseContext;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.entity.ShoppingCart;
 import com.itheima.reggie.service.ShoppingCartService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 购物车管理
+ */
 @RestController
 @RequestMapping("/shoppingCart")
 @Slf4j
+@Api(tags = "购物车管理相关接口")
 public class ShoppingCartController {
     @Autowired
     private ShoppingCartService shoppingCartService;
@@ -25,6 +31,7 @@ public class ShoppingCartController {
      * @return
      */
     @PostMapping("/add")
+    @ApiOperation("添加购物车接口")
     public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart){
         //设置用户id，指定当前是哪个用户的购物车数据
         Long currentId = BaseContext.getCurrentId();
@@ -66,6 +73,7 @@ public class ShoppingCartController {
      * @return
      */
     @GetMapping("/list")
+    @ApiOperation("查看购物车接口")
     public R<List<ShoppingCart>> list(){
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
@@ -81,6 +89,7 @@ public class ShoppingCartController {
      * @return
      */
     @DeleteMapping("/clean")
+    @ApiOperation("清空购物车接口")
     public R<String> clean(){
         LambdaQueryWrapper<ShoppingCart> queryWrapper =new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());

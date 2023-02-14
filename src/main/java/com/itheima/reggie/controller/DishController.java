@@ -11,6 +11,10 @@ import com.itheima.reggie.service.CategoryService;
 import com.itheima.reggie.service.DishFlavorService;
 import com.itheima.reggie.service.DishService;
 import com.itheima.reggie.service.impl.DishServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/dish")
 @Slf4j
+@Api(tags = "菜品管理相关接口")
 public class DishController {
     @Autowired
     private DishService dishService;
@@ -47,6 +52,7 @@ public class DishController {
      * @return
      */
     @PostMapping
+    @ApiOperation("新增菜品接口")
     public R<String> save(@RequestBody DishDto dishDto){
         log.info(dishDto.toString());
         dishService.saveWithFlavor(dishDto);
@@ -70,6 +76,12 @@ public class DishController {
      * @return
      */
     @GetMapping("/page")
+    @ApiOperation("分页查询接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page",value = "页码",required = true),
+            @ApiImplicitParam(name = "pageSize",value = "每页记录数",required = true),
+            @ApiImplicitParam(name = "name",value = "菜品名称",required = false),
+    })
     public R<Page> page(int page,int pageSize,String name){
         //构造分页构造器对象
         Page pageInfo = new Page(page,pageSize);
@@ -110,6 +122,7 @@ public class DishController {
      * @return
      */
     @GetMapping("/{id}")
+    @ApiOperation("根据id查询菜品信息的对应口味信息接口")
     public R<DishDto> get(@PathVariable Long id){
         DishDto dishDto = dishService.getByIdWithFlavor(id);
         return R.success(dishDto);
@@ -121,6 +134,7 @@ public class DishController {
      * @return
      */
     @PutMapping
+    @ApiOperation("修改菜品接口")
     public R<String> update(@RequestBody DishDto dishDto){
         dishService.updateWithFlavor(dishDto);
 
@@ -135,11 +149,6 @@ public class DishController {
         return R.success("菜品修改成功");
     }
 
-    /**
-     * 根据条件查询菜品数据
-     * @param dish
-     * @return
-     */
     /*@GetMapping("/list")
     public R<List<Dish>> list(Dish dish){
         //构造查询条件构造器
@@ -153,7 +162,13 @@ public class DishController {
 
         return R.success(list);
     }*/
+    /**
+     * 根据条件查询菜品数据
+     * @param dish
+     * @return
+     */
     @GetMapping("/list")
+    @ApiOperation("根据条件查询菜品数据接口")
     public R<List<DishDto>> list(Dish dish){
         List<DishDto> dishDtoList = null;
 

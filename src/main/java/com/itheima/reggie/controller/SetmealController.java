@@ -11,8 +11,11 @@ import com.itheima.reggie.service.CategoryService;
 import com.itheima.reggie.service.DishService;
 import com.itheima.reggie.service.SetmealDishService;
 import com.itheima.reggie.service.SetmealService;
+import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/setmeal")
+@Api(tags = "套餐相关接口")
 public class SetmealController {
     @Autowired
     private SetmealService setmealService;
@@ -39,6 +43,8 @@ public class SetmealController {
      * @return
      */
     @PostMapping
+    @ApiOperation("新增套餐接口")
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> save(@RequestBody SetmealDto setmealDto){
         setmealService.saveWithDish(setmealDto);
         return R.success("新增套餐成功");
@@ -52,6 +58,12 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/page")
+    @ApiOperation("套餐分页查询接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page",value = "页码",required = true),
+            @ApiImplicitParam(name = "pageSize",value = "每页记录数",required = true),
+            @ApiImplicitParam(name = "name",value = "套餐名称",required = false),
+    })
     public R<Page> get(int page, int pageSize,String name){
         //分页构造器
         Page<Setmeal> pageInfo = new Page<>(page,pageSize);
@@ -97,6 +109,8 @@ public class SetmealController {
      * @return
      */
     @DeleteMapping
+    @ApiOperation("套餐删除接口")
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> remove(@RequestParam List<Long> ids){
         setmealService.removeWithDish(ids);
         return R.success("套餐数据删除成功");
@@ -108,6 +122,8 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
+    @ApiOperation("根据条件查询套餐数据接口")
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>> list(Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper =new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId()!=null,Setmeal::getCategoryId,setmeal.getCategoryId());

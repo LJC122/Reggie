@@ -3,6 +3,8 @@ package com.itheima.reggie.controller;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.entity.Orders;
 import com.itheima.reggie.service.OrderService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/order")
 @Slf4j
+@Api(tags = "订单相关接口")
 public class OrderController {
     @Autowired
     private OrderService orderService;
@@ -26,6 +29,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/submit")
+    @ApiOperation("用户下单接口")
     private R<String> submit(@RequestBody Orders orders){
         orderService.submit(orders);
         return R.success("下单成功");
